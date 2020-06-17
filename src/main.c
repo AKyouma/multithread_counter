@@ -40,6 +40,7 @@ int main() {
 
 	pthread_t t[n_threads] = {0, 0, 0, 0};
 	int numero, filhos, vazia=0, i=0;
+	int valores[n_threads];
 	
 
 	do{
@@ -47,6 +48,7 @@ int main() {
 
 		//verifica se já tem 4 threads filhos, se sim espera um acabar para continuar
 		if (filhos == 4){
+
 			while (i < 4){		
 				//espera acabar
 				pthread_join(t[i], NULL);
@@ -66,7 +68,8 @@ int main() {
 		}
 
 		//após a verificação de qual está vazio, cria o thread no endereço t[vazio]
-		pthread_create(&(t[vazia]), NULL, thread, ((void *) (&numero)));
+		valores[vazia] = numero;
+		pthread_create(&(t[vazia]), NULL, thread, ((void *) (&valores[vazia])));
 		filhos++;
 		
 	}while(getchar() != '\n');
