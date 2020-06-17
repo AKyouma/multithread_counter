@@ -27,7 +27,7 @@ int primo (int numero){
 
 //cria a função thread para travar e as demais threads não aumentarem o resultado sem a anterior terminar
 void *thread(void *args){
-
+	
 	int num = *((int *)args);
 	int num_avaliado = primo(num);
 	pthread_mutex_lock(&trava);
@@ -39,7 +39,8 @@ void *thread(void *args){
 int main() {
 
 	pthread_t t[n_threads] = {0, 0, 0, 0};
-	int numero, filhos, vazia=0, i=0;
+	int numero, filhos, vazia, i=0;
+	//criei um array para guardar os resultados da threads, ao que parece estava perdendo eles no processo
 	int valores[n_threads];
 	
 
@@ -48,7 +49,6 @@ int main() {
 
 		//verifica se já tem 4 threads filhos, se sim espera um acabar para continuar
 		if (filhos == 4){
-
 			while (i < 4){		
 				//espera acabar
 				pthread_join(t[i], NULL);
@@ -58,24 +58,24 @@ int main() {
 				i++;
 			}	
 		}
-		
 		for(i=0; i < 4; i++){
 			//verifica qual dos threads está vazio, ou seja setado com 0
 			if(t[i] == 0){
 				vazia=i;
-				i=4;
+				i=n_threads;
 			}
 		}
-
+		//resetei o i como 0, ao que parece estava mantendo o valor para continuar na outra thread e não pegava ultimo valor
+		i=0;
 		//após a verificação de qual está vazio, cria o thread no endereço t[vazio]
 		valores[vazia] = numero;
-		pthread_create(&(t[vazia]), NULL, thread, ((void *) (&valores[vazia])));
+		pthread_create(&(t[vazia]), NULL, thread, ((void*)(&valores[vazia])));
 		filhos++;
 		
 	}while(getchar() != '\n');
 	
 	//espera todos os threads acabarem	
-	for(int i = 0; i < 4; i++)
+	for(i = 0; i < 4; i++)
 		pthread_join(t[i], NULL);
 		
 	printf("%d\n", resultado);
